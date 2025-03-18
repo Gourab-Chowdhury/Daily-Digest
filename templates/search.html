@@ -1,0 +1,73 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="search-container">
+    <h1>Search Results</h1>
+    
+    <div class="search-filters">
+        <form action="{{ url_for('search') }}" method="get" id="advanced-search-form">
+            <div class="form-group">
+                <label for="q">Search term:</label>
+                <input type="text" id="q" name="q" value="{{ query }}" placeholder="Enter keywords...">
+            </div>
+            
+            <div class="form-group">
+                <label for="author">Author:</label>
+                <input type="text" id="author" name="author" value="{{ author }}" placeholder="Author username">
+            </div>
+            
+            <div class="form-group">
+                <label for="start_date">From date:</label>
+                <input type="date" id="start_date" name="start_date" value="{{ start_date }}">
+            </div>
+            
+            <div class="form-group">
+                <label for="end_date">To date:</label>
+                <input type="date" id="end_date" name="end_date" value="{{ end_date }}">
+            </div>
+            
+            <div class="form-group">
+                <label for="sort_by">Sort by:</label>
+                <select id="sort_by" name="sort_by">
+                    <option value="date" {% if sort_by == 'date' %}selected{% endif %}>Date (newest first)</option>
+                    <option value="title" {% if sort_by == 'title' %}selected{% endif %}>Title (A-Z)</option>
+                </select>
+            </div>
+            
+            <button type="submit" class="btn">Search</button>
+            <a href="{{ url_for('blog') }}" class="btn btn-secondary">Clear</a>
+        </form>
+    </div>
+    
+    <div id="results-summary">
+        {% if posts %}
+            <p>Found {{ posts|length }} result{{ 's' if posts|length != 1 else '' }}</p>
+        {% else %}
+            <p>No posts found matching your criteria.</p>
+        {% endif %}
+    </div>
+    
+    <div id="search-results">
+        {% for post in posts %}
+        <div class="post card" id="post-{{ post.id }}">
+            <h2 class="post-title">{{ post.title }}</h2>
+            <p class="post-content">{{ post.content|truncate(200) }}</p>
+            <p class="post-meta">
+                By <span class="post-author">{{ post.author.username }}</span> on 
+                <span class="post-date">{{ post.date.strftime('%Y-%m-%d') }}</span>
+            </p>
+            <a href="{{ url_for('blog') }}#post-{{ post.id }}" class="read-more">Read full post</a>
+            
+            {% if current_user.is_authenticated and current_user.id == post.author_id %}
+            <div class="post-actions">
+                <a href="{{ url_for('edit', post_id=post.id) }}" class="btn btn-small">Edit</a>
+                <form action="{{ url_for('delete', post_id=post.id) }}" method="post" class="inline-form">
+                    <button type="submit" class="btn btn-small btn-danger">Delete</button>
+                </form>
+            </div>
+            {% endif %}
+        </div>
+        {% endfor %}
+    </div>
+</div>
+{% endblock %}

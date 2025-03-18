@@ -1,0 +1,36 @@
+{% extends "base.html" %}
+
+{% block content %}
+<!-- <div class="blog-header">
+    <h1>Blog Posts</h1>
+    <div class="blog-search">
+        <input type="text" id="blog-search-input" placeholder="Search posts..." />
+        <a href="{{ url_for('search') }}" class="btn btn-small">Advanced Search</a>
+    </div>
+</div> -->
+
+<div id="posts-container">
+    {% for post in posts %}
+    <div class="post card" id="post-{{ post.id }}">
+        <h2 class="post-title">{{ post.title }}</h2>
+        <p class="post-content">{{ post.content|truncate(200) }}</p> <!-- Show only the first 200 characters -->
+        <p class="post-meta">
+            By <span class="post-author">{{ post.author.username }}</span> on 
+            <span class="post-date">{{ post.date.strftime('%Y-%m-%d') }}</span>
+        </p>
+        <a href="{{ url_for('view_post', post_id=post.id) }}" class="read-more">Read full post</a>
+        
+        {% if current_user.is_authenticated and current_user.id == post.author_id %}
+        <div class="post-actions">
+            <a href="{{ url_for('edit', post_id=post.id) }}" class="btn btn-small">Edit</a>
+            <form action="{{ url_for('delete', post_id=post.id) }}" method="post" class="inline-form">
+                <button type="submit" class="btn btn-small btn-danger">Delete</button>
+            </form>
+        </div>
+        {% endif %}
+    </div>
+    {% else %}
+    <p>No posts found.</p>
+    {% endfor %}
+</div>
+{% endblock %}

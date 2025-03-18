@@ -1,0 +1,22 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="post-full">
+    <h1 class="post-title">{{ post.title }}</h1>
+    <p class="post-meta">
+        By <span class="post-author">{{ post.author.username }}</span> on 
+        <span class="post-date">{{ post.date.strftime('%Y-%m-%d') }}</span>
+    </p>
+    <div class="post-content">
+        {{ post.content }}
+    </div>
+    {% if current_user.is_authenticated and current_user.id == post.author_id %}
+    <div class="post-actions">
+        <a href="{{ url_for('edit', post_id=post.id) }}" class="btn btn-small">Edit</a>
+        <form action="{{ url_for('delete', post_id=post.id) }}" method="post" class="inline-form">
+            <button type="submit" class="btn btn-small btn-danger">Delete</button>
+        </form>
+    </div>
+    {% endif %}
+</div>
+{% endblock %}
